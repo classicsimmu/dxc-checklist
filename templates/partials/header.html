@@ -1,0 +1,47 @@
+<nav class="navbar navbar-light bg-light shadow-sm fixed-top">
+  <div class="container-fluid">
+    {% if request.user.is_authenticated %}
+      <!-- Mobile only toggle -->
+      <button class="btn btn-outline-secondary d-lg-none me-2" type="button"
+        data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+        <i class="bi bi-list"></i>
+      </button>
+    {% endif %}
+{% if request.user.is_authenticated %}
+  {% if request.user.profile.role == "Staff" %}
+    <a class="navbar-brand fw-bold" href="{% url 'staff_dashboard' %}">DXC Checklist</a>
+  {% elif request.user.profile.role == "Doer" %}
+    <a class="navbar-brand fw-bold" href="{% url 'doer_dashboard' %}">DXC Checklist</a>
+  {% else %}
+    <a class="navbar-brand fw-bold" href="#">DXC Checklist</a>
+  {% endif %}
+{% else %}
+  <a class="navbar-brand fw-bold" href="{% url 'login' %}">DXC Checklist</a>
+{% endif %}
+
+    <div class="d-flex align-items-center">
+      {% if request.user.is_authenticated %}
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+            {{ request.user.username }}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><span class="dropdown-item-text">
+              Role: {% if request.user.profile %}{{ request.user.profile.role }}{% else %}Unknown{% endif %}
+            </span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                <i class="bi bi-box-arrow-right me-2"></i>Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      {% else %}
+        {% if request.resolver_match.url_name != 'login' %}
+          <a class="btn btn-outline-primary btn-sm" href="{% url 'login' %}">Login</a>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</nav>

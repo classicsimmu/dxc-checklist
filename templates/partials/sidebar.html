@@ -1,0 +1,49 @@
+<!-- Desktop sidebar (always visible) -->
+<div class="sidebar d-none d-lg-block">
+  <h6 class="fw-bold text-secondary mb-3 px-2">Main Menu</h6>
+  <ul class="nav flex-column">
+<li class="nav-item">
+  {% if request.user.profile.role == "Staff" %}
+    <a class="nav-link {% if request.resolver_match.url_name == 'staff_dashboard' %}active text-primary{% endif %}" href="{% url 'staff_dashboard' %}">
+      <i class="bi bi-speedometer2 me-2"></i> Dashboard
+    </a>
+  {% elif request.user.profile.role == "Doer" %}
+    <a class="nav-link {% if request.resolver_match.url_name == 'doer_dashboard' %}active text-primary{% endif %}" href="{% url 'doer_dashboard' %}">
+      <i class="bi bi-speedometer2 me-2"></i> Dashboard
+    </a>
+  {% else %}
+    <a class="nav-link" href="#">
+      <i class="bi bi-speedometer2 me-2"></i> Dashboard
+    </a>
+  {% endif %}
+</li>
+
+    {% if request.user.profile.role == 'Staff' %}
+<li class="nav-item">
+  <a class="nav-link {% if request.resolver_match.url_name == 'user_list' %}active text-primary{% endif %}" href="{% url 'user_list' %}">
+    <i class="bi bi-person-lines-fill me-2"></i> Users
+  </a>
+</li>
+{% endif %}
+
+    <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-list-check me-2"></i> Tasks</a></li>
+    <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people me-2"></i> Team</a></li>
+    <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-gear me-2"></i> Settings</a></li>
+  </ul>
+</div>
+
+<!-- Mobile sidebar (offcanvas) -->
+<div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="mobileSidebar">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Menu</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-list-check me-2"></i> Tasks</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-people me-2"></i> Team</a></li>
+      <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-gear me-2"></i> Settings</a></li>
+    </ul>
+  </div>
+</div>

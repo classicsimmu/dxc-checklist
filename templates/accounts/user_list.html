@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">All Users</h4>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+      <i class="bi bi-person-plus me-1"></i> Add User
+    </button>
+  </div>
+
+  {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }} py-2">{{ msg }}</div>
+  {% endfor %}
+
+  <div class="card shadow-sm">
+    <div class="card-body table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Department</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email|default:"—" }}</td>
+            <td>{{ user.profile.mobile|default:"—" }}</td>
+            <td>{{ user.profile.department|default:"—" }}</td>
+            <td><span class="badge bg-info text-dark">{{ user.profile.role }}</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                data-bs-target="#editModal{{ user.id }}"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
+                data-bs-target="#resetModal{{ user.id }}"><i class="bi bi-key"></i></button>
+              <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                data-bs-target="#deleteModal{{ user.id }}"><i class="bi bi-trash"></i></button>
+            </td>
+          </tr>
+
+          <!-- Edit Modal -->
+          <div class="modal fade" id="editModal{{ user.id }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="POST" action="{% url 'edit_user' user.id %}">
+                  {% csrf_token %}
+                  <div class="modal-header">
+                    <h5 class="modal-title">Edit {{ user.username }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label>Username</label>
+                    <input type="text" name="username" class="form-control mb-2" value="{{ user.username }}" required>
+                    <label>Email</label>
+                    <input type="email" name="email" class="form-control mb-2" value="{{ user.email }}">
+                    <label>Mobile</label>
+                    <input type="text" name="mobile" class="form-control mb-2" value="{{ user.profile.mobile }}">
+                    <label>Department</label>
+                    <select name="department" class="form-select mb-2">
+                      <option value="">Select Department</option>
+{% for dept in departments %}
+                        <option value="{{ dept }}" {% if user.profile.department == dept %}selected{% endif %}>{{ dept }}</option>
+                      {% endfor %}
+                    </select>
+                    <label>Role</label>
+                    <select name="role" class="form-select">
+                      <option value="Staff" {% if user.profile.role == "Staff" %}selected{% endif %}>Staff</option>
+                      <option value="Doer" {% if user.profile.role == "Doer" %}selected{% endif %}>Doer</option>
+                    </select>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reset Password Modal -->
+          <div class="modal fade" id="resetModal{{ user.id }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="POST" action="{% url 'reset_password' user.id %}">
+                  {% csrf_token %}
+                  <div class="modal-header">
+                    <h5 class="modal-title">Reset Password - {{ user.username }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label>New Password</label>
+                    <input type="text" name="password" class="form-control" required>
+                    <small class="text-muted">Enter new password (will replace old one)</small>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Reset</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete Modal -->
+          <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="POST" action="{% url 'delete_user' user.id %}">
+                  {% csrf_token %}
+                  <div class="modal-header">
+                    <h5 class="modal-title">Delete User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    Are you sure you want to delete <strong>{{ user.username }}</strong>?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add User Modal (same as before) -->
+{% include "accounts/add_user_modal.html" %}
+
+{% endblock %}
